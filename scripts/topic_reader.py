@@ -16,8 +16,7 @@ from std_msgs.msg import String
 class MasterCommunicationNode(object):
     def __init__(self):
         self.hostname = socket.gethostname()
-        hostname_ip = socket.gethostbyname(self.hostname)
-        rospy.init_node(hostname_ip + '_local_topic_reader', log_level=rospy.DEBUG)
+        rospy.init_node(hostname + '_local_topic_reader', log_level=rospy.DEBUG)
         self.odom = rospy.Subscriber('odom', Odometry, self.odom_callback)
         self.share_data_pub = rospy.Publisher(self.hostname + '/master_data', String, queue_size=5)
     
