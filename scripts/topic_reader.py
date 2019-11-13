@@ -10,7 +10,7 @@ import socket
 
 from nav_msgs.msg import Odometry
 
-#from multimaster_shared_topics.msg import data
+from multimaster_shared_topics.msg import data
 from std_msgs.msg import String
 
 class MasterCommunicationNode(object):
@@ -18,7 +18,7 @@ class MasterCommunicationNode(object):
         self.hostname = socket.gethostname()
         rospy.init_node(self.hostname + '_local_topic_reader', log_level=rospy.DEBUG)
         self.odom = rospy.Subscriber('odom', Odometry, self.odom_callback)
-        self.share_data_pub = rospy.Publisher(self.hostname + '/master_data', String, queue_size=5)
+        self.share_data_pub = rospy.Publisher(self.hostname + '/master_data', data, queue_size=5)
     
     def odom_callback(self, msg):
         x = msg.pose.pose.position.x
@@ -34,8 +34,10 @@ class MasterCommunicationNode(object):
         rospy.logdebug_throttle(1, "Received Odom msg (x, y, cita): %.2f, %.2f, %.2f" % (x, y, yaw))
     
     def pub_data(self):
-        msg = String()
-        msg.data = self.hostname + 'gol'
+        msg = data()
+        msg.header.stamp = rospy.Time.now()
+        msg.header.frame_id = 'shared_data'
+        msg.msg1 = self.hostname + 'gol'
         self.share_data_pub.publish(msg)
 
     def run(self):
